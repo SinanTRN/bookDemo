@@ -38,5 +38,19 @@ namespace bookDemo.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPut("{id:int}")]
+        public IActionResult UpdateOneBook([FromRoute(Name ="id")]int id, [FromBody]Book book)
+        {
+            //Check book
+            var entity=AplicationContext.Books.Find(b=>b.Id.Equals(id));
+            
+            if (entity is null) return NotFound();//404
+            if(id!=book.Id) return BadRequest();//400
+
+            AplicationContext.Books.Remove(entity);
+            book.Id=entity.Id;
+            AplicationContext.Books.Add(book);
+            return Ok(book);//200
+        }
     }
 }
