@@ -1,6 +1,7 @@
 ﻿using bookDemo.Data;
 using bookDemo.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace bookDemo.Controllers
@@ -67,6 +68,14 @@ namespace bookDemo.Controllers
                 message=$"Book with id:{id} could not found."
             });//404
             AplicationContext.Books.Remove(entity);
+            return NoContent();//204
+        }
+        [HttpPatch("{id:int}")]
+        public IActionResult PartialyUpdateOneBook([FromRoute(Name="id")]int id, [FromBody] JsonPatchDocument<Book> bookPatch)
+        {
+            var entity = AplicationContext.Books.Find(b => b.Id.Equals(id));
+            if (entity is null) return NotFound();//404
+            bookPatch.ApplyTo(entity);
             return NoContent();//204
         }
 
